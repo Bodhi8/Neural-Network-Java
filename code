@@ -1,0 +1,59 @@
+package main;
+
+import java.util.HashMap;
+import java.util.LinkedList;
+
+public class NeuralNetwork {
+
+//for debugging
+int timestep = 0;
+
+HashMap<String,InputNeuron> inputNeurons;
+LinkedList<Neuron> internalNeurons;
+LinkedList<OutputNeuron> outputNeurons;
+
+public NeuralNetwork
+    (HashMap<String,InputNeuron> inputNeurons, LinkedList<Neuron> internalNeurons, LinkedList<OutputNeuron> outputNeurons)
+{
+    this.inputNeurons = inputNeurons;
+    this.internalNeurons = internalNeurons;
+    this.outputNeurons = outputNeurons;
+    this.outputNeurons.get(0).getOutput();
+}
+
+public int getNrTimestep() {
+    return timestep;
+}
+
+public int[] timestep(LinkedList<String> inputs) {
+    System.out.println("Network: timestep: " + timestep);
+    for (String inp : inputs) {
+        assert inputNeurons.get(inp) != null : "timestep was given a String as key for an InputNeuron that didn't exist";
+        inputNeurons.get(inp).fire();
+    }
+    for (Neuron internal : internalNeurons) {
+        internal.nextTimestep();
+    }
+    for (Neuron outputNeuron : outputNeurons) {
+        outputNeuron.nextTimestep();
+    }
+    int[] output = new int[outputNeurons.size()];
+    int count = 0;
+    for (OutputNeuron outputNeuron : outputNeurons) {
+        output[count++] = outputNeuron.getOutput();
+    }
+    timestep++;
+    resetAll();
+    return output;
+}
+
+private void resetAll() {
+    for (Neuron internal : internalNeurons) {
+        internal.reset();
+    }
+    for (Neuron outputNeuron : outputNeurons) {
+        outputNeuron.reset();
+    }
+}
+
+}
